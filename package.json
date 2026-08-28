@@ -1,0 +1,12 @@
+{
+  "name": "rcb-booking-form",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Roof Cleaners Brisbane - Secure My Booking page (Stripe card capture, no charge, manual charge later)",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "stripe": "^16.12.0"
+  }
+}

@@ -123,6 +123,29 @@ async function createNotification(userId, itemId, text) {
   return mondayGraphQL(query, { userId, targetId: itemId, text });
 }
 
+// Returns the monday user id(s) assigned to the lead in the Agent (people) column,
+// so we can notify the lead owner as well as the default admin.
+async function getItemOwnerIds(itemId) {
+  const query = `
+    query ($itemId: [ID!]) {
+      items(ids: $itemId) {
+        column_values(ids: ["person"]) { value }
+      }
+    }`;
+  try {
+    const data = await mondayGraphQL(query, { itemId: [itemId] });
+    const raw = data?.items?.[0]?.column_values?.[0]?.value;
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return (parsed.personsAndTeams || [])
+      .filter((p) => p.kind === 'person')
+      .map((p) => String(p.id));
+  } catch (e) {
+    console.error('owner lookup failed:', e.message);
+    return [];
+  }
+}
+
 function splitName(fullName, first, last) {
   if (first || last) return { first: first || '', last: last || '' };
   const parts = (fullName || '').trim().split(/\s+/);
@@ -189,8 +212,11 @@ module.exports = async function handler(req, res) {
       }
 
       // 3) Notify the team with the full booking details (no card / no Stripe link).
-      const notifyIds = (process.env.NOTIFY_MONDAY_USER_IDS || '74526990')
+      //    Default admin(s) from NOTIFY_MONDAY_USER_IDS, PLUS the lead owner (Agent).
+      const adminIds = (process.env.NOTIFY_MONDAY_USER_IDS || '74526990')
         .split(',').map((s) => s.trim()).filter(Boolean);
+      const ownerIds = itemId ? await getItemOwnerIds(itemId) : [];
+      const notifyIds = [...new Set([...adminIds, ...ownerIds])];
       if (itemId && notifyIds.length) {
         const notifText = [
           `New no-card booking secured - ${quoteNo}`,

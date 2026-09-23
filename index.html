@@ -91,7 +91,7 @@
     .card-note svg { flex-shrink: 0; margin-top: 1px; }
 
     /* Agreement */
-    .agree { display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; font-size: 13px; color: var(--ink); }
+    .agree { display: flex; align-items: flex-start; gap: 10px; margin-top: 20px; font-size: 13px; color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; }
     .agree input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
     .agree label { cursor: pointer; }
     .agree a { color: var(--navy-2); font-weight: 600; }
@@ -195,7 +195,7 @@
             <span>No card details are needed to confirm. Just choose how you'd like to pay and confirm below. Payment will be arranged once your service is completed.</span>
           </div>
 
-          <div class="section-label" style="margin-top:22px;">Photos <span style="font-weight:600;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;margin-left:4px;">Optional</span></div><label id="opt-photo" style="display:flex;gap:11px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px 16px;cursor:pointer;margin-bottom:14px;"><input type="checkbox" id="photo-consent" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:var(--accent);"><span><span style="font-weight:600;color:var(--ink);">Yes, you can use my before and after photos in your advertising</span><span style="display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.5;">Never faces, street numbers or interiors. You can change your mind any time.</span></span></label><div class="agree">
+          <div class="section-label" style="margin-top:22px;">Photos <span style="font-weight:600;font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:20px;padding:2px 9px;margin-left:4px;">Optional</span></div><label id="opt-photo" style="display:flex;gap:11px;align-items:flex-start;cursor:pointer;margin-bottom:14px;"><input type="checkbox" id="photo-consent" style="margin-top:2px;width:17px;height:17px;flex:none;accent-color:var(--accent);"><span><span style="font-weight:400;color:var(--ink);font-size:13px;">Yes, you can use my before and after photos in your advertising</span><span style="display:block;margin-top:4px;color:var(--muted);font-size:13px;line-height:1.5;">Never faces, street numbers or interiors. You can change your mind any time.</span></span></label><div class="agree">
             <input type="checkbox" id="agree" />
             <label for="agree">I have read and agree to the
               <a href="https://roofcleanersbrisbane.com.au/preparing-exterior-house-cleaning/" target="_blank" rel="noopener">Preparations</a>,
@@ -370,7 +370,7 @@
         try {
           const res = await fetch('/api/confirm-booking-nocard', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ ...booking, payment_type: paymentType, no_card: true, cc_captured: 'No' }),
+            body: JSON.stringify({ ...booking, payment_type: paymentType, no_card: true, cc_captured: 'No', photo_consent: !!(document.getElementById('photo-consent') || {}).checked }),
           });
           if (!res.ok) {
             let msg = 'Something went wrong. Please try again.';
@@ -414,7 +414,7 @@
         // 3) Move to Booked in monday + record payment option + CC captured.
         await fetch('/api/confirm-booking', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...booking, payment_type: paymentType, customerId: si.customerId, setupIntentId: si.setupIntentId }),
+          body: JSON.stringify({ ...booking, payment_type: paymentType, customerId: si.customerId, setupIntentId: si.setupIntentId, photo_consent: !!(document.getElementById('photo-consent') || {}).checked }),
         });
 
         showSuccess();

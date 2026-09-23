@@ -95,7 +95,7 @@
     .agree input { width: 18px; height: 18px; margin-top: 2px; flex-shrink: 0; accent-color: var(--accent); cursor: pointer; }
     .agree label { cursor: pointer; }
     .agree a { color: var(--navy-2); font-weight: 600; }
-    #agree-error { color: #e5484d; font-size: 12.5px; margin-top: 6px; min-height: 16px; }
+    #agree-error { color: #e5484d; font-size: 12.5px; margin-top: 6px; min-height: 16px; } .agree.agree-warn { outline: 2px solid #e5484d; outline-offset: 4px; border-radius: 10px; transition: outline-color .15s; }
 
     .btn {
       width: 100%; border: none; cursor: pointer; font-family: inherit; font-size: 16px; font-weight: 700;
@@ -357,8 +357,8 @@
 
       // Agreement required (both modes)
       if (!agreeBox.checked) {
-        agreeError.textContent = 'Please tick the box to agree before confirming your booking.';
-        agreeBox.focus();
+        agreeError.textContent = 'Just tick the box above to confirm you\'ve read and agree to our terms, then you\'re all set.';
+        agreeBox.focus();var _ag=agreeBox.closest('.agree');if(_ag){_ag.classList.add('agree-warn');agreeBox.scrollIntoView({behavior:'smooth',block:'center'});agreeBox.addEventListener('change',function(){_ag.classList.remove('agree-warn');},{once:true});}
         return;
       }
 

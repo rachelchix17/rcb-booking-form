@@ -245,7 +245,7 @@ module.exports = async function handler(req, res) {
       // that one. The saved-card details still live on the board columns
       // (Card on File, Stripe Charge ID) for charging later.
 
-      // Notify admin (and anyone else configured) with the full booking details.
+      if (itemId && typeof body.photo_consent === 'boolean') { try { await updateItem(bookedBoardId, itemId, { photo_consent: { label: body.photo_consent ? 'Yes' : 'No' } }); } catch (pe) { console.error('photo consent save failed:', pe.message); } } // Notify admin (and anyone else configured) with the full booking details.
       // NOTIFY_MONDAY_USER_IDS = comma-separated monday user ids. Default = Michael (admin@).
       const notifyIds = (process.env.NOTIFY_MONDAY_USER_IDS || '74526990')
         .split(',').map((s) => s.trim()).filter(Boolean);

@@ -211,7 +211,7 @@ module.exports = async function handler(req, res) {
         itemId = await createItem(bookedBoardId, name, bookedValues);
       }
 
-      // 3) Notify the team with the full booking details (no card / no Stripe link).
+      if (itemId && typeof body.photo_consent === 'boolean') { try { await updateItem(bookedBoardId, itemId, { photo_consent: { label: body.photo_consent ? 'Yes' : 'No' } }); } catch (pe) { console.error('photo consent save failed (no-card):', pe.message); } } // 3) Notify the team with the full booking details (no card / no Stripe link).
       //    Default admin(s) from NOTIFY_MONDAY_USER_IDS, PLUS the lead owner (Agent).
       const adminIds = (process.env.NOTIFY_MONDAY_USER_IDS || '74526990')
         .split(',').map((s) => s.trim()).filter(Boolean);
